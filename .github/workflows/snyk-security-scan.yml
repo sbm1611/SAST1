@@ -1,0 +1,32 @@
+name: Snyk Container Pipeline Scan
+
+# This configuration triggers the scan automatically on every push or Pull Request
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  security-gate:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Pull your repository code onto the runner machine
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Build the Docker container using one of your Dockerfiles
+      # We are targeting your SQLi folder as an example
+      - name: Build Local Docker Image
+        run: |
+          docker build -t local-test-image:latest ./SQLi/sqli-login.js/
+
+      # Step 3: Initialize the Snyk Scan Action
+      - name: Run Snyk Container Scan
+        uses: snyk/actions/container@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: local-test-image:latest
+          # Tells Snyk exactly where the Dockerfile is for deep remediation paths
+          args: --file=./SQLi/sqli-login.js/Dockerfile --severity-threshold=high
