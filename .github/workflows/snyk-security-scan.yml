@@ -19,9 +19,9 @@ jobs:
         run: |
           docker build -t local-test-image:latest ./SQLi/sqli-login.js/
 
-      # Step 3: Run the verified Snyk container scanner action
+      # Step 3: Run the correct Snyk container scanner path
       - name: Run Snyk Container Scan
-        uses: snyk/actions/container@2.0.0
+        uses: snyk/actions/container@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
