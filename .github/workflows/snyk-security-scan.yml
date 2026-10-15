@@ -14,10 +14,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step 2: Build the Docker container using your local directory setup
+      # Step 2: Build the Docker container using a generic root build context
+      # Pointing directly to the Dockerfile path
       - name: Build Local Docker Image
         run: |
-          docker build -t local-test-image:latest ./SQLi/sqli-login.js/
+          docker build -t local-test-image:latest -f ./SQLi/sqli-login/Dockerfile ./SQLi/sqli-login/
 
       # Step 3: Run the officially recognized Snyk Docker scanner action
       - name: Run Snyk Container Scan
@@ -26,4 +27,4 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: local-test-image:latest
-          args: --file=./SQLi/sqli-login.js/Dockerfile --severity-threshold=high
+          args: --file=./SQLi/sqli-login/Dockerfile --severity-threshold=high
